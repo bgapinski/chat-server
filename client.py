@@ -43,7 +43,7 @@ class Client():
                 if r is sys.stdin:
                     m += sys.stdin.readline().rstrip("\n")
                 else:
-                    msg = r.recv(10).decode()
+                    msg = self.receive_message(r)
                     if msg == "":
                         print("Connection closed by server.")
                         sys.exit(1)  # Should turn this into an exception
@@ -56,6 +56,16 @@ class Client():
                     m += "\r"
                     w.send(m.encode())
                     m = ''
+
+    def receive_message(self, r):
+        msg = r.recv(10).decode()
+        if msg == "":
+            return ""
+        else:
+            while not msg[-1] == "\r":
+                msg += r.recv(10).decode()
+            return msg
+
 
 
 if __name__ == '__main__':
