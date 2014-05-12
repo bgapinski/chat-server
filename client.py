@@ -5,6 +5,8 @@ import sys
 IP = "localhost"
 PORT = 8080
 
+#TODO: Change all these prints into log messages
+
 
 class Client():
     """
@@ -41,13 +43,18 @@ class Client():
                 if r is sys.stdin:
                     m += sys.stdin.readline().rstrip("\n")
                 else:
-                    msg = r.recv(10)
-                    print(msg.decode())
+                    msg = r.recv(10).decode()
+                    if msg == "":
+                        print("Connection closed by server.")
+                        sys.exit(1)  # Should turn this into an exception
+
+                    print(msg)
                     print(">> ", end="", flush=True)
 
             for w in wlist:
                 if m:
-                    w.sendall(m.encode())
+                    m += "\r"
+                    w.send(m.encode())
                     m = ''
 
 

@@ -5,6 +5,8 @@ import select
 HOST = "0.0.0.0"
 PORT = 8080
 
+#TODO: Use a logger instead of print
+
 
 class Server():
     """
@@ -39,21 +41,27 @@ class Server():
 
                     print("Client connected from {}".format(client_ip))
                 else:
-                    msg = r.recv(10).decode()
-                    if msg == "":
-                        self.readers.remove(r)
-                        self.writers.remove(r)
-                        print("Client disconnected from {}".format(
-                            r.getsockname()[0]))
-
-                    else:
-                        msg = msg
-                        print(msg)
+                    msg = self.receive_message(r)
+                    if msg:
                         msgs.append(msg)
+                        print(msg)
 
             msg = msgs.pop(0) if msgs else ""
             for w in wlist:
-                w.sendall(msg.encode())
+                w.send(msg.encode())
+
+    def receive_message(self, r):
+        msg = r.recv(10).decode()
+        if msg == "":
+            self.readers.remove(r)
+            self.writers.remove(r)
+            print("Client disconnected from {}".format(
+                r.getsockname()[0]))
+            return ""
+        else:
+            while not msg[-1] == "\r":
+                msg += r.recv(10).decode()
+            return msg
 
 
 if __name__ == '__main__':
