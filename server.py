@@ -43,12 +43,13 @@ class Server():
                 else:
                     msg = self.receive_message(r)
                     if msg:
-                        msgs.append(msg)
+                        msgs.append((msg, r))
                         print(msg)
 
-            msg = msgs.pop(0) if msgs else ""
+            msg, r = msgs.pop(0) if msgs else ("", None)
             for w in wlist:
-                w.send(msg.encode())
+                if not w is r:
+                    w.send(msg.encode())
 
     def receive_message(self, r):
         msg = r.recv(10).decode()
