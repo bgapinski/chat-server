@@ -41,6 +41,7 @@ class Client():
 
             for r in rlist:
                 if r is sys.stdin:
+                    print(">> ", end="", flush=True)
                     m += sys.stdin.readline().rstrip("\n")
                 else:
                     msg = self.receive_message(r)
@@ -49,7 +50,6 @@ class Client():
                         sys.exit(1)  # Should turn this into an exception
 
                     print(msg)
-                    print(">> ", end="", flush=True)
 
             for w in wlist:
                 if m:
@@ -65,7 +65,6 @@ class Client():
             while not msg[-1] == "\r":
                 msg += r.recv(10).decode()
             return msg
-
 
 
 if __name__ == '__main__':
